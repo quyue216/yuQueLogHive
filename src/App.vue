@@ -116,9 +116,11 @@ const { userInfo, selectBookInfo } =toRefs(store)
                    <div class="tree-nodeContainer">
                         <div class="main">
                             <div>
+                               <h2 class="title">选择要合并的文档</h2>
                                 <CataLogLeft></CataLogLeft>
                             </div>
                             <div>
+                                <h2 class="title">选择要合并的目标文档</h2>
                                 <CatalogRight></CatalogRight>
                             </div>
                         </div>
@@ -169,5 +171,10 @@ const { userInfo, selectBookInfo } =toRefs(store)
            width: 70%;
         }
     }
+}
+
+.title{
+font-size: 25px;
+margin-bottom: 10px
 }
 </style>

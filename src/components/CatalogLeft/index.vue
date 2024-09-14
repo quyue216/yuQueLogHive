@@ -1,10 +1,10 @@
 <script setup>
 import useStore from "@/store/index";
-import { ref, watch, onMounted, toRefs, computed, toValue } from 'vue'
+import { ref, watch, computed, toValue } from 'vue'
 import { useFetch } from "@/store/useFetch";
 import { getChildren } from "@/utils/tree.js";
 // 定义一个全局状态
-const { store, updateUserInfo, setSelectBookInfo } = useStore()
+const { store } = useStore()
 
 const url = ref("/repos/24552766/toc");
 
@@ -19,7 +19,7 @@ watch(() => store.selectBookInfo, (val) => {
     }
 })
 
-
+// 加工目录结构
 const catalogue = computed(() => {
 
     if (!data.value) {
@@ -27,17 +27,28 @@ const catalogue = computed(() => {
     } else {
         //1. 先获取对应的一级目录
         const treeRoots = data.value.filter((item) => !item.parent_uuid);
-        console.log('-----', treeRoots);
 
         return treeRoots.map((treeNode) => ({...treeNode,children:getChildren(toValue(data), treeNode)}))
     }
 })
+const defaultProps = {
+  children: 'children',
+  label: 'title',
+}
 </script>
 
 <template>
     <div>
-        你好世界Left {{ store.userInfo.name }} {{catalogue}}
+        <el-tree :data="catalogue"
+        show-checkbox 
+        :props="defaultProps" 
+        :default-expanded-keys="catalogue.map((item)=>item.uuid)"
+        class="custom-font-size" node-key="uuid"/>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.custom-font-size {
+  font-size: 18px; /* 调整为你想要的大小 */
+}
+</style>
