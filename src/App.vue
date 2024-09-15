@@ -1,36 +1,21 @@
 <script setup>
-import axios from "@/axios/index";
-import { ref, watch, onMounted ,toRefs, toValue} from 'vue'
+import { ref, watch, onMounted, toRefs, toValue } from 'vue'
 import { ElMessage } from 'element-plus';
 import useStore from "@/store/index";
-import { getUserInfo, takeAllBooks ,takeDoc} from "@/axios/api";
+import { getUserInfo, takeAllBooks, takeDoc, createSummary } from "@/axios/api";
 import CataLogLeft from "@/components/CatalogLeft/index.vue";
 import CatalogRight from "@/components/CatalogRight/index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
+import { generateGroup, mergeSummary, sortTime } from "@/utils/tools.js";
 
 
 
 // 定义一个全局状态
-const  { store, updateUserInfo, setSelectBookInfo} = useStore()
-/* axios({
-    method: "put",
-    url: "/repos/24552766/docs/185648517",
-    data: {
-        "slug": "lx5un2zxkecy6fuc",
-        "title": "测试合并",
-        "public": 0,
-        "format": "markdown",
-        "body": str
-    },
-}).then((res) => {
-    console.log('-----res', res);
-}).catch((reject) => {
-    console.log('-----1', reject);
+const { store, updateUserInfo, setSelectBookInfo } = useStore()
 
-}) */
 const awaitMergeDocs = ref([]);
 // 合并目标文档
-const  targetDoc = ref([]);
+const targetDoc = ref([]);
 //!获取对应的知识库列表
 const books = ref([]);
 const selectBook = ref(null);
@@ -81,33 +66,46 @@ watch(selectBook, () => {
         setSelectBookInfo(result);
     }
 })
-const { userInfo, selectBookInfo } =toRefs(store)
-
+const { userInfo } = toRefs(store)
 
 //合并逻辑
 async function mergeDoc() {
-    
-    if( targetDoc.value.filter((item)=> !item.children.length).length !== 1 || awaitMergeDocs.value.length===0){
-      return  ElMessage.error("文档选择不正确");
+
+    if (targetDoc.value.filter((item) => !item.children.length).length !== 1 || awaitMergeDocs.value.length === 0) {
+        return ElMessage.error("文档选择不正确");
     }
-    
+
     // 得到所有的文章数据
-   const docs = await getSelectedDocs(toValue(awaitMergeDocs));
+    const docs = await getSelectedDocs(toValue(awaitMergeDocs));
 
-  // 将文章转换为分类对象 
-   const groups=  docs.map((doc)=> matchSummary(doc)).flat()
+    // 将文章转换为分类对象 
+    const cryObj = docs.map((doc) => matchSummary(doc)).flat()
 
-   console.log('---docs',groups);
-   
+    //将分类对象进行分组 
+    const cryGroup = generateGroup(cryObj)
+    
+    //对分类对象进行排序
+    Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
+
+    console.log('----cryGroup',cryGroup);
+    
+  /*   let newDocStr = mergeSummary(cryGroup)
+    
+    await createSummary(`/repos/${selectBook.value}/docs/${targetDoc.value[0].id}`, {
+        slug: targetDoc.value[0].id,
+        title: targetDoc.value[0].title,
+        body: newDocStr
+    })
+
+    ElMessage.success("合并成功!") */
 }
 // 获取所有的文章数据
-function getSelectedDocs(docs){
+function getSelectedDocs(docs) {
 
-  const urls = docs.map((item)=>`/repos/${selectBook.value}/docs/${item.id}`);
+    const urls = docs.map((item) => `/repos/${selectBook.value}/docs/${item.id}`);
 
-  return  Promise.all(urls.map((u)=> takeDoc(u)))
+    return Promise.all(urls.map((u) => takeDoc(u)))
 }
-
 
 </script>
 
@@ -123,7 +121,7 @@ function getSelectedDocs(docs){
                         </el-select>
                     </el-col>
                     <el-col :offset="3" :span="3">
-                        <el-text>欢迎 {{userInfo.name}}</el-text>
+                        <el-text>欢迎 {{ userInfo.name }}</el-text>
                     </el-col>
                     <el-col :offset="3" :span="7">
                         <el-button type="primary" @click="mergeDoc">
@@ -135,20 +133,22 @@ function getSelectedDocs(docs){
             </el-header>
             <el-container>
                 <el-main>
-                   <div class="tree-nodeContainer">
+                    <div class="tree-nodeContainer">
                         <div class="main">
                             <div>
-                               <h2  class="title" v-if="awaitMergeDocs.length">已选择 <span style="color: red;">{{awaitMergeDocs.length}}</span></h2>
-                               <h2 v-else class="title">选择要合并的文档</h2>
+                                <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
+                                        style="color: red;">{{ awaitMergeDocs.length }}</span></h2>
+                                <h2 v-else class="title">选择要合并的文档</h2>
                                 <CataLogLeft v-model="awaitMergeDocs"></CataLogLeft>
                             </div>
                             <div>
                                 <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
-                                <h2 class="title" v-else>已选择 <span style="color: red;">{{targetDoc[0]?.title}}</span> </h2>
+                                <h2 class="title" v-else>已选择 <span style="color: red;">{{ targetDoc[0]?.title }}</span>
+                                </h2>
                                 <CatalogRight v-model="targetDoc"></CatalogRight>
                             </div>
                         </div>
-                   </div>
+                    </div>
                 </el-main>
             </el-container>
         </el-container>
@@ -180,25 +180,28 @@ function getSelectedDocs(docs){
         }
     }
 
-    .main{
+    .main {
         display: flex;
         height: 100%;
-        >div{
-            flex:1;
+
+        >div {
+            flex: 1;
         }
     }
-    .tree-nodeContainer{
+
+    .tree-nodeContainer {
         display: flex;
         justify-content: center;
         width: 100%;
-        .main{
-           width: 70%;
+
+        .main {
+            width: 70%;
         }
     }
 }
 
-.title{
-font-size: 25px;
-margin-bottom: 10px
+.title {
+    font-size: 25px;
+    margin-bottom: 10px
 }
 </style>

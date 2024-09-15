@@ -22,3 +22,15 @@ export  function takeDoc(url){
         url
     })
 }
+// 更新对应的文档
+export function createSummary(url,data) {
+  return axios({
+    method: "put",
+    url,
+    data: {
+        "public": 0,
+        "format": "markdown",
+        ...data
+    },
+})
+}

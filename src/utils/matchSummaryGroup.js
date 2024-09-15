@@ -46,7 +46,7 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
     return source.split("###").filter((item) => item !== "\n" && item).map((item) => ({
         group: item.slice(0, item.indexOf("\n")).trim(),//标题结尾有一个换行
         content: item.slice(item.indexOf("\n")),
-        time:startStr ===  "\n## rethink" ? time : docInfo.title
+        time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
     }))
 }
 // 截取反思字符串
