@@ -86,10 +86,8 @@ async function mergeDoc() {
     
     //对分类对象进行排序
     Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
-
-    console.log('----cryGroup',cryGroup);
     
-  /*   let newDocStr = mergeSummary(cryGroup)
+    let newDocStr = mergeSummary(cryGroup)
     
     await createSummary(`/repos/${selectBook.value}/docs/${targetDoc.value[0].id}`, {
         slug: targetDoc.value[0].id,
@@ -97,7 +95,7 @@ async function mergeDoc() {
         body: newDocStr
     })
 
-    ElMessage.success("合并成功!") */
+    ElMessage.success("合并成功!")
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {
@@ -105,6 +103,17 @@ function getSelectedDocs(docs) {
     const urls = docs.map((item) => `/repos/${selectBook.value}/docs/${item.id}`);
 
     return Promise.all(urls.map((u) => takeDoc(u)))
+}
+let leftTree = ref();
+let rightTree = ref();
+function restCheckedTreeNode(){
+
+    awaitMergeDocs.value = []
+
+    targetDoc.value = []
+
+    leftTree.value.$refs.tree.setCheckedKeys([])
+    rightTree.value.$refs.tree.setCheckedKeys([])
 }
 
 </script>
@@ -115,17 +124,22 @@ function getSelectedDocs(docs) {
             <el-header class="header">
 
                 <el-row style="margin-top: 15px;">
-                    <el-col :span="8">
+                    <el-col :span="6">
                         <el-select placeholder="选择知识库" v-model="selectBook">
                             <el-option v-for="item in books" :key="item.id" :label="item.name" :value="item.id" />
                         </el-select>
                     </el-col>
-                    <el-col :offset="3" :span="3">
+                    <el-col :offset="2" :span="4">
                         <el-text>欢迎 {{ userInfo.name }}</el-text>
                     </el-col>
-                    <el-col :offset="3" :span="7">
+                    <el-col :offset="3" :span="2">
                         <el-button type="primary" @click="mergeDoc">
                             merge
+                        </el-button>
+                    </el-col>
+                    <el-col :offset="3" :span="3">
+                        <el-button type="primary" @click="restCheckedTreeNode">
+                            rest
                         </el-button>
                     </el-col>
                 </el-row>
@@ -139,13 +153,13 @@ function getSelectedDocs(docs) {
                                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
                                         style="color: red;">{{ awaitMergeDocs.length }}</span></h2>
                                 <h2 v-else class="title">选择要合并的文档</h2>
-                                <CataLogLeft v-model="awaitMergeDocs"></CataLogLeft>
+                                <CataLogLeft ref="leftTree" v-model="awaitMergeDocs"></CataLogLeft>
                             </div>
                             <div>
                                 <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
                                 <h2 class="title" v-else>已选择 <span style="color: red;">{{ targetDoc[0]?.title }}</span>
                                 </h2>
-                                <CatalogRight v-model="targetDoc"></CatalogRight>
+                                <CatalogRight ref="rightTree" v-model="targetDoc"></CatalogRight>
                             </div>
                         </div>
                     </div>
