@@ -39,9 +39,8 @@ const defaultProps = {
 const treeNodeChecked = defineModel()
 
 const tree = ref(null);
-const handleCheckChange = (data, checked) => {
+const handleCheckChange = () => {
     treeNodeChecked.value = tree.value.getCheckedNodes()
-
 };
 </script>
 

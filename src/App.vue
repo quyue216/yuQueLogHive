@@ -1,15 +1,14 @@
 <script setup>
 import axios from "@/axios/index";
-import { ref, watch, onMounted ,toRefs} from 'vue'
+import { ref, watch, onMounted ,toRefs, toValue} from 'vue'
 import { ElMessage } from 'element-plus';
 import useStore from "@/store/index";
-import { getUserInfo, takeAllBooks } from "@/axios/api";
+import { getUserInfo, takeAllBooks ,takeDoc} from "@/axios/api";
 import CataLogLeft from "@/components/CatalogLeft/index.vue";
 import CatalogRight from "@/components/CatalogRight/index.vue";
-import data from "@/utils/test-stage.json";
 import matchSummary from "@/utils/matchSummaryGroup";
 
-let result = matchSummary(data.data);
+
 
 // 定义一个全局状态
 const  { store, updateUserInfo, setSelectBookInfo} = useStore()
@@ -34,7 +33,7 @@ const awaitMergeDocs = ref([]);
 const  targetDoc = ref([]);
 //!获取对应的知识库列表
 const books = ref([]);
-const selectBook = ref("");
+const selectBook = ref(null);
 
 //!处理输入对应的token
 const dialogVisible = ref(false);
@@ -62,7 +61,8 @@ onMounted(() => {
             const result = await takeAllBooks(res.id);
 
             books.value = result;
-
+            //设置选择的默认值
+            selectBook.value = 24552766
         })
     }
 })
@@ -83,6 +83,32 @@ watch(selectBook, () => {
 })
 const { userInfo, selectBookInfo } =toRefs(store)
 
+
+//合并逻辑
+async function mergeDoc() {
+    
+    if( targetDoc.value.filter((item)=> !item.children.length).length !== 1 || awaitMergeDocs.value.length===0){
+      return  ElMessage.error("文档选择不正确");
+    }
+    
+    // 得到所有的文章数据
+   const docs = await getSelectedDocs(toValue(awaitMergeDocs));
+
+  // 将文章转换为分类对象 
+   const groups=  docs.map((doc)=> matchSummary(doc)).flat()
+
+   console.log('---docs',groups);
+   
+}
+// 获取所有的文章数据
+function getSelectedDocs(docs){
+
+  const urls = docs.map((item)=>`/repos/${selectBook.value}/docs/${item.id}`);
+
+  return  Promise.all(urls.map((u)=> takeDoc(u)))
+}
+
+
 </script>
 
 <template>
@@ -100,7 +126,7 @@ const { userInfo, selectBookInfo } =toRefs(store)
                         <el-text>欢迎 {{userInfo.name}}</el-text>
                     </el-col>
                     <el-col :offset="3" :span="7">
-                        <el-button type="primary">
+                        <el-button type="primary" @click="mergeDoc">
                             merge
                         </el-button>
                     </el-col>

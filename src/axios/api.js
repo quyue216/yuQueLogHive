@@ -14,3 +14,11 @@ export  function takeAllBooks(userID){
         url:`users/${userID}/repos`
     })
 }
+
+// 获取单篇文章
+export  function takeDoc(url){
+    return axios({
+        method:"get",
+        url
+    })
+}
