@@ -6,7 +6,7 @@ import { getUserInfo, takeAllBooks, takeDoc, createSummary } from "@/axios/api";
 import CataLogLeft from "@/components/CatalogLeft/index.vue";
 import CatalogRight from "@/components/CatalogRight/index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
-import { generateGroup, mergeSummary, sortTime } from "@/utils/tools.js";
+import { generateGroup, mergeSummary, sortTime ,getMergeTitle} from "@/utils/tools.js";
 
 
 
@@ -80,9 +80,13 @@ async function mergeDoc() {
 
     // 将文章转换为分类对象 
     const cryObj = docs.map((doc) => matchSummary(doc)).flat()
+    
+    const title =  getMergeTitle(cryObj)
 
+    console.log('title---',title);
+    
     //将分类对象进行分组 
-    const cryGroup = generateGroup(cryObj)
+   /*  const cryGroup = generateGroup(cryObj)
     
     //对分类对象进行排序
     Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
@@ -95,7 +99,7 @@ async function mergeDoc() {
         body: newDocStr
     })
 
-    ElMessage.success("合并成功!")
+    ElMessage.success("合并成功!") */
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {

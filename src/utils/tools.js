@@ -1,5 +1,5 @@
 // 阶段总结格式化
-let stageFormat={
+let stageFormat = {
     "第一阶段": 0,
     "第二阶段": 1,
     "第三阶段": 2,
@@ -15,7 +15,7 @@ let stageFormat={
     "第十三阶段": 12,
     "第十四阶段": 13,
     "第十五阶段": 14
-  }
+}
 
 // 合并字符串
 export function mergeSummary(groupObj) {
@@ -71,40 +71,65 @@ export function sortTime(cgyData) {
 
     let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
 
-   let correctFormatData = cgyData.filter((cry)=>cry.time.search(verifyDate)!==-1);
+    let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
 
-   let unCorrectFormatData = cgyData.filter((cry)=>cry.time.search(verifyDate)===-1);
-    
+    let unCorrectFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) === -1);
+
     correctFormatData.sort((a, b) => {
-       
-        let aTimeStr = a.time.split(" ")[a.time.split(" ").length-1];
 
-        let bTimeStr = b.time.split(" ")[b.time.split(" ").length-1];
-        
+        let aTimeStr = a.time.split(" ")[a.time.split(" ").length - 1];
+
+        let bTimeStr = b.time.split(" ")[b.time.split(" ").length - 1];
+
         return convertDateToTimestamp(aTimeStr) - convertDateToTimestamp(bTimeStr)
     })
 
     unCorrectFormatData = sortUnCorrectFormat(unCorrectFormatData)
-    
+
     return correctFormatData.concat(unCorrectFormatData)
 }
 // 处理不规范格式
 function sortUnCorrectFormat(cryList) {
-    
+
     let newArr = new Array(cryList.length).fill(0);
-    
-    let  staged =[] //暂存标题不合法数据
 
-    cryList.forEach((cry,index)=>{
+    let staged = [] //暂存标题不合法数据
 
-     let time = cry.time.slice(-4);
-     
-      if(stageFormat[time]!==undefined){
-        newArr[stageFormat[time]] = cry;
-      }else{
-        staged.push(cry);
-      }
+    cryList.forEach((cry, index) => {
+
+        let time = cry.time.slice(-4);
+
+        if (stageFormat[time] !== undefined) {
+            newArr[stageFormat[time]] = cry;
+        } else {
+            staged.push(cry);
+        }
     })
-    return newArr.filter((item)=>item!==0).concat(staged)
+    return newArr.filter((item) => item !== 0).concat(staged)
 }
 
+function sortArrayByTime(cgyData) {
+    let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
+
+    let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
+
+    correctFormatData.sort((a, b) => {
+
+        let aTimeStr = a.time.split(" ")[a.time.split(" ").length - 1];
+
+        let bTimeStr = b.time.split(" ")[b.time.split(" ").length - 1];
+
+        return convertDateToTimestamp(aTimeStr) - convertDateToTimestamp(bTimeStr)
+    });
+
+    return correctFormatData;
+}
+
+export function getMergeTitle(arr) {
+
+    let correctFormatData = sortArrayByTime(arr)
+
+    return [correctFormatData[0], correctFormatData[correctFormatData.length - 1]].
+    map((item) => item.time.split(" ")[item.time.split(" ").length - 1])
+    .join(" - ")
+}
