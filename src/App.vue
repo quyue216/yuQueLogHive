@@ -29,7 +29,9 @@ const  { store, updateUserInfo, setSelectBookInfo} = useStore()
     console.log('-----1', reject);
 
 }) */
-
+const awaitMergeDocs = ref([]);
+// 合并目标文档
+const  targetDoc = ref([]);
 //!获取对应的知识库列表
 const books = ref([]);
 const selectBook = ref("");
@@ -79,12 +81,6 @@ watch(selectBook, () => {
         setSelectBookInfo(result);
     }
 })
-watch(()=>store.selectBookInfo,(val)=>{
-
-  console.log('值调用了哈哈哈---',val);
-
-
-})
 const { userInfo, selectBookInfo } =toRefs(store)
 
 </script>
@@ -116,12 +112,14 @@ const { userInfo, selectBookInfo } =toRefs(store)
                    <div class="tree-nodeContainer">
                         <div class="main">
                             <div>
-                               <h2 class="title">选择要合并的文档</h2>
-                                <CataLogLeft></CataLogLeft>
+                               <h2  class="title" v-if="awaitMergeDocs.length">已选择 <span style="color: red;">{{awaitMergeDocs.length}}</span></h2>
+                               <h2 v-else class="title">选择要合并的文档</h2>
+                                <CataLogLeft v-model="awaitMergeDocs"></CataLogLeft>
                             </div>
                             <div>
-                                <h2 class="title">选择要合并的目标文档</h2>
-                                <CatalogRight></CatalogRight>
+                                <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
+                                <h2 class="title" v-else>已选择 <span style="color: red;">{{targetDoc[0]?.title}}</span> </h2>
+                                <CatalogRight v-model="targetDoc"></CatalogRight>
                             </div>
                         </div>
                    </div>

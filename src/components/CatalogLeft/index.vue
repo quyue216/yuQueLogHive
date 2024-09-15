@@ -28,27 +28,34 @@ const catalogue = computed(() => {
         //1. 先获取对应的一级目录
         const treeRoots = data.value.filter((item) => !item.parent_uuid);
 
-        return treeRoots.map((treeNode) => ({...treeNode,children:getChildren(toValue(data), treeNode)}))
+        return treeRoots.map((treeNode) => ({ ...treeNode, children: getChildren(toValue(data), treeNode) }))
     }
 })
 const defaultProps = {
-  children: 'children',
-  label: 'title',
+    children: 'children',
+    label: 'title',
 }
+
+//用于实现双向数据绑定
+const treeNodeChecked = defineModel()
+const tree = ref(null);
+const handleCheckChange = (data, checked) => {
+   
+   treeNodeChecked.value = tree.value.getCheckedNodes()
+};
 </script>
 
 <template>
     <div>
-        <el-tree :data="catalogue"
-        show-checkbox 
-        :props="defaultProps" 
-        :default-expanded-keys="catalogue.map((item)=>item.uuid)"
-        class="custom-font-size" node-key="uuid"/>
+        <el-tree ref="tree" :data="catalogue" show-checkbox :props="defaultProps"
+            :default-expanded-keys="catalogue.map((item) => item.uuid)" @check-change="handleCheckChange"
+            class="custom-font-size" node-key="uuid" />
     </div>
 </template>
 
 <style scoped>
 .custom-font-size {
-  font-size: 18px; /* 调整为你想要的大小 */
+    font-size: 18px;
+    /* 调整为你想要的大小 */
 }
 </style>

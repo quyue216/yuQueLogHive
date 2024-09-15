@@ -27,7 +27,7 @@ const catalogue = computed(() => {
     } else {
         //1. 先获取对应的一级目录
         const treeRoots = data.value.filter((item) => !item.parent_uuid);
-
+        //!将数据按照目录顺序转换为树结构
         return treeRoots.map((treeNode) => ({...treeNode,children:getChildren(toValue(data), treeNode)}))
     }
 })
@@ -35,14 +35,24 @@ const defaultProps = {
   children: 'children',
   label: 'title',
 }
+
+const treeNodeChecked = defineModel()
+
+const tree = ref(null);
+const handleCheckChange = (data, checked) => {
+    treeNodeChecked.value = tree.value.getCheckedNodes()
+
+};
 </script>
 
 <template>
     <div>
         <el-tree :data="catalogue"
+        ref="tree"
         show-checkbox 
         :props="defaultProps" 
         :default-expanded-keys="catalogue.map((item)=>item.uuid)"
+        @check-change="handleCheckChange"
         class="custom-font-size" node-key="uuid"/>
     </div>
 </template>
