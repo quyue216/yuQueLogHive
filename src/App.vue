@@ -8,8 +8,6 @@ import CatalogRight from "@/components/CatalogRight/index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
 import { generateGroup, mergeSummary, sortTime ,getMergeTitle} from "@/utils/tools.js";
 
-
-
 // 定义一个全局状态
 const { store, updateUserInfo, setSelectBookInfo } = useStore()
 
@@ -24,6 +22,7 @@ const selectBook = ref(null);
 const dialogVisible = ref(false);
 
 const accessToken = ref("");
+//! token检验
 const checkAccessToken = () => {
     if (accessToken.value === "") {
         ElMessage.error("accessToken 不能为空");
@@ -51,12 +50,12 @@ onMounted(() => {
         })
     }
 })
-// 缓存token到本地
+//! 缓存token到本地
 watch(accessToken, () => {
     window.localStorage.setItem("token", accessToken.value);
     window.token = accessToken.value
 })
-
+// 选择发生变化得到选择的select
 watch(selectBook, () => {
 
     if (selectBook.value !== "") {
@@ -71,7 +70,8 @@ const { userInfo } = toRefs(store)
 //合并逻辑
 async function mergeDoc() {
 
-    if (targetDoc.value.filter((item) => !item.children.length).length !== 1 || awaitMergeDocs.value.length === 0) {
+    if (targetDoc.value.filter((item) => !item.children.length).length !== 1 
+    || awaitMergeDocs.value.length === 0) {
         return ElMessage.error("文档选择不正确");
     }
 
@@ -106,6 +106,7 @@ function getSelectedDocs(docs) {
 
     return Promise.all(urls.map((u) => takeDoc(u)))
 }
+//!树形结构重置
 let leftTree = ref();
 let rightTree = ref();
 function restCheckedTreeNode(){

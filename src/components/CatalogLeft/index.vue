@@ -47,9 +47,14 @@ const handleCheckChange = (data, checked) => {
 
 <template>
     <div>
-        <el-tree ref="tree" :data="catalogue" show-checkbox :props="defaultProps"
-            :default-expanded-keys="catalogue.map((item) => item.uuid)" @check-change="handleCheckChange"
-            class="custom-font-size" node-key="uuid" />
+        <el-tree ref="tree" 
+        :data="catalogue" 
+        show-checkbox 
+        :props="defaultProps"
+        :default-expanded-keys="catalogue.map((item) => item.uuid)" 
+        @check-change="handleCheckChange"
+        class="custom-font-size" 
+        node-key="uuid" />
     </div>
 </template>
 
