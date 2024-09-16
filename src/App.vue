@@ -77,7 +77,6 @@ async function mergeDoc() {
 
     // 得到所有的文章数据
     const docs = await getSelectedDocs(toValue(awaitMergeDocs));
-   console.log('----docs1',docs);
    
     // 将文章转换为分类对象 
     const cryObj = docs.map((doc) => matchSummary(doc)).flat()
@@ -133,7 +132,7 @@ function restCheckedTreeNode(){
                         </el-select>
                     </el-col>
                     <el-col :offset="2" :span="4">
-                        <el-text>欢迎 {{ userInfo.name }}</el-text>
+                        <el-text>hello {{ userInfo.name }}</el-text>
                     </el-col>
                     <el-col :offset="3" :span="2">
                         <el-button type="primary" @click="mergeDoc">

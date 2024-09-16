@@ -47,23 +47,10 @@ export function generateGroup(cates) {
 }
 
 // 定义一个函数来转换日期格式为时间戳
-export function convertDateToTimestamp(dateString) {
-    const regex = /(\d{4})年(\d{1,2})月(\d{1,2})日/;
-    const matches = regex.exec(dateString);
-
-    if (matches) {
-        const year = parseInt(matches[1], 10);
-        const month = parseInt(matches[2], 10) - 1; // JavaScript中月份是从0开始的
-        const day = parseInt(matches[3], 10);
-
-        // 创建Date对象
-        const date = new Date(year, month, day);
-
-        // 返回时间戳
-        return date.getTime();
-    } else {
-        throw new Error('Invalid date format');
-    }
+export function convertDateToTimestamp(dateStr) {
+    //exec匹配换成match匹配
+    const dateParts = dateStr.match(/\d+/g).map(Number);
+    return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).getTime();
 }
 
 // 针对数据排序的工具函数
@@ -109,40 +96,37 @@ function sortUnCorrectFormat(cryList) {
 }
 
 function sortArrayByTime(cgyData) {
-
-    let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
+//! 去掉全局和多行匹配
+    let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/
     let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
 
     correctFormatData.sort((a, b) => {
+        //!抽取复用代码
+        let aTimeStr =  extractTimeStr(a.time);
 
-        let aTimeStr = a.time.split(" ")[a.time.split(" ").length - 1];
-
-        let bTimeStr = b.time.split(" ")[b.time.split(" ").length - 1];
+        let bTimeStr =  extractTimeStr(b.time);
 
         return convertDateToTimestamp(aTimeStr) - convertDateToTimestamp(bTimeStr)
     });
 
     return correctFormatData;
 }
-
+//!抽取的单行代码
+function extractTimeStr(timeStr) {
+    return timeStr.split(" ").pop();
+}
 export function getMergeTitle(arr) {
 
     let correctFormatData = sortArrayByTime(arr)
 
     let firstElm = correctFormatData[0];
+
     let lastElm = correctFormatData[correctFormatData.length - 1];
 
     if (correctFormatData.length === 1) {  //只有一个值
 
-        let splitArr = firstElm.time.split(" ")
-        return splitArr[splitArr.length - 1]
-        
-    } else {
-        return [firstElm, lastElm].
-            map((item) => {
-                let splitArr = item.time.split(" ")
-                return splitArr[splitArr.length - 1]
-            })
-            .join(" - ")
+        return extractTimeStr(firstElm.time)    
     }
+
+    return `${extractTimeStr(firstElm.time)} - ${extractTimeStr(lastElm.time)}`;
 }
