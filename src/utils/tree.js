@@ -12,14 +12,20 @@ export function getChildren(arr,treeNode) {
     const res = []
     
     let pointer_uuid = treeNode.child_uuid; //指针
-        
+    //! 创建一个快捷映射表，用于快速查找uuid对应的节点
+    const uuidMap = new Map(arr.map(item => [item.uuid, item]));
+    
     while (pointer_uuid){
+    
+        const treeChildNode = uuidMap.get(pointer_uuid);
         
-     let treeChildNode =  arr.find((item)=> item.uuid === pointer_uuid)
-       
-     pointer_uuid = treeChildNode.sibling_uuid;
+        if(!treeChildNode) break;
 
-     res.push({...treeChildNode,children:getChildren(arr,treeChildNode)})  
+        const children = getChildren(arr,treeChildNode)
+    
+        res.push({...treeChildNode,children})  
+
+        pointer_uuid = treeChildNode.sibling_uuid;
     }
     
     return res;
