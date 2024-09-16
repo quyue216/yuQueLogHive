@@ -61,16 +61,16 @@ export function sortTime(cgyData) {
     let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
 
     let unCorrectFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) === -1);
-
+    // 按照时间进行排序
     correctFormatData.sort((a, b) => {
 
-        let aTimeStr = a.time.split(" ")[a.time.split(" ").length - 1];
+        let aTimeStr = extractTimeStr(a.time);
 
-        let bTimeStr = b.time.split(" ")[b.time.split(" ").length - 1];
+        let bTimeStr = extractTimeStr(b.time);
 
         return convertDateToTimestamp(aTimeStr) - convertDateToTimestamp(bTimeStr)
     })
-
+    // 处理不规范的排序
     unCorrectFormatData = sortUnCorrectFormat(unCorrectFormatData)
 
     return correctFormatData.concat(unCorrectFormatData)
@@ -82,7 +82,7 @@ function sortUnCorrectFormat(cryList) {
 
     let staged = [] //暂存标题不合法数据
 
-    cryList.forEach((cry, index) => {
+    cryList.forEach((cry) => {
 
         let time = cry.time.slice(-4);
 
@@ -115,6 +115,7 @@ function sortArrayByTime(cgyData) {
 function extractTimeStr(timeStr) {
     return timeStr.split(" ").pop();
 }
+// 得到文章的标题
 export function getMergeTitle(arr) {
 
     let correctFormatData = sortArrayByTime(arr)

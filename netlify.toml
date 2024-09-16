@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/api/*"
+  to = "https://www.yuque.com/api/v2/"
+  status = 200
+  force = true
