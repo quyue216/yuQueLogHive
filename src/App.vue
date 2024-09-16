@@ -160,7 +160,7 @@ function restCheckedTreeNode(){
                             </div>
                             <div>
                                 <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
-                                <h2 class="title" v-else>已选择 <span style="color: red;">{{ targetDoc[0]?.title }}</span>
+                                <h2 class="title"  v-else>已选择 <span class="ellipsis" style="color: red;" >{{ targetDoc[0]?.title }}</span>
                                 </h2>
                                 <CatalogRight ref="rightTree" v-model="targetDoc"></CatalogRight>
                             </div>
@@ -218,7 +218,17 @@ function restCheckedTreeNode(){
 }
 
 .title {
+    display: flex;
+    gap: 10px;
     font-size: 25px;
     margin-bottom: 10px
+}
+
+.ellipsis {
+    display: inline-block;
+    max-width: 200px; /* 可以根据需要调整宽度 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>
