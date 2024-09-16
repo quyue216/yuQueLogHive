@@ -77,16 +77,15 @@ async function mergeDoc() {
 
     // 得到所有的文章数据
     const docs = await getSelectedDocs(toValue(awaitMergeDocs));
-
+   console.log('----docs1',docs);
+   
     // 将文章转换为分类对象 
     const cryObj = docs.map((doc) => matchSummary(doc)).flat()
-    
-    const title =  getMergeTitle(cryObj)
 
-    console.log('title---',title);
+    const title =  getMergeTitle(cryObj)
     
     //将分类对象进行分组 
-   /*  const cryGroup = generateGroup(cryObj)
+    const cryGroup = generateGroup(cryObj)
     
     //对分类对象进行排序
     Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
@@ -95,11 +94,11 @@ async function mergeDoc() {
     
     await createSummary(`/repos/${selectBook.value}/docs/${targetDoc.value[0].id}`, {
         slug: targetDoc.value[0].id,
-        title: targetDoc.value[0].title,
+        title: title,
         body: newDocStr
     })
 
-    ElMessage.success("合并成功!") */
+    ElMessage.success("合并成功!")
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {

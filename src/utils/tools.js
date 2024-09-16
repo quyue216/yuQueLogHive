@@ -109,8 +109,8 @@ function sortUnCorrectFormat(cryList) {
 }
 
 function sortArrayByTime(cgyData) {
-    let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
 
+    let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
     let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
 
     correctFormatData.sort((a, b) => {
@@ -129,7 +129,20 @@ export function getMergeTitle(arr) {
 
     let correctFormatData = sortArrayByTime(arr)
 
-    return [correctFormatData[0], correctFormatData[correctFormatData.length - 1]].
-    map((item) => item.time.split(" ")[item.time.split(" ").length - 1])
-    .join(" - ")
+    let firstElm = correctFormatData[0];
+    let lastElm = correctFormatData[correctFormatData.length - 1];
+
+    if (correctFormatData.length === 1) {  //只有一个值
+
+        let splitArr = firstElm.time.split(" ")
+        return splitArr[splitArr.length - 1]
+        
+    } else {
+        return [firstElm, lastElm].
+            map((item) => {
+                let splitArr = item.time.split(" ")
+                return splitArr[splitArr.length - 1]
+            })
+            .join(" - ")
+    }
 }
