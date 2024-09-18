@@ -66,10 +66,11 @@ watch(selectBook, () => {
     }
 })
 const { userInfo } = toRefs(store)
+let loading = ref(false);
 
 //合并逻辑
 async function mergeDoc() {
-
+    loading.value = true;
     if (targetDoc.value.filter((item) => !item.children.length).length !== 1 
     || awaitMergeDocs.value.length === 0) {
         return ElMessage.error("文档选择不正确");
@@ -98,6 +99,7 @@ async function mergeDoc() {
     })
 
     ElMessage.success("合并成功!")
+    loading.value = false;
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {
@@ -151,7 +153,7 @@ function restCheckedTreeNode(){
             <el-container>
                 <el-main>
                     <div class="tree-nodeContainer">
-                        <div class="main">
+                        <div class="main" v-loading="loading">
                             <div>
                                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
                                         style="color: red;">{{ awaitMergeDocs.length }}</span></h2>

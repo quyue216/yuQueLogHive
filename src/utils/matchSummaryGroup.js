@@ -44,8 +44,8 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
     let source = str.replace(startStr, "")
     //！总结的分类就是三级标题
     return source.split("###").filter((item) => item !== "\n" && item).map((item) => ({
-        group: item.slice(0, item.indexOf("\n")).trim(),//标题结尾有一个换行
-        content: item.slice(item.indexOf("\n")),
+        group: item.slice(0, item.indexOf("\n")),//标题结尾有一个换行
+        content: item.slice(item.indexOf("\n")).replace(`\n`,`\n   `),
         time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
     }))
 }
