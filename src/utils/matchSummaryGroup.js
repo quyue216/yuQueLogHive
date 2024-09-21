@@ -6,14 +6,10 @@ const matchRegex = {
 let docInfo = null;
 // 入口函数 返回提取的本篇文章的总结对象, 一般调用至少调用三十次，
 export default function main(data) {
-   
     // 保存文章对象
     docInfo = data
 
     let summaryText =  data.body; //得到md文件格式
-
-    let stageSummary = [];
-    
     // 表示是单元
     let isStage = data.title.includes("单元");
 
@@ -22,20 +18,16 @@ export default function main(data) {
     // 提取的rethinks
     let rethinks = handelRethinks(summaryText,isStage);
 
-    rethinks.forEach((item, index) => {
-        stageSummary = stageSummary.concat(...summaryGroupAdapter(isStage,item, dates[index]))
-    })
+    const stageSummary = rethinks.flatMap((item, index) =>
+        summaryGroupAdapter(isStage, item, dates[index])
+    );
 
     return stageSummary;
 }
 
-function summaryGroupAdapter(isStage,...rest){
+function summaryGroupAdapter(isStage,str,time){
     //!不是总结
-    if(!isStage){
-        return  summaryGroup(...rest,"\n# rethink")
-    }else{
-         return  summaryGroup(...rest)
-    }
+    return summaryGroup(str, time, !isStage ? "\n# rethink" : "\n## rethink");
 }
 
 //!2. 将总结转换为分类对象
@@ -43,19 +35,20 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
 
     let source = str.replace(startStr, "")
     //！总结的分类就是三级标题
-    return source.split("###").filter((item) => item !== "\n" && item).map((item) => ({
-        group: item.slice(0, item.indexOf("\n")),//标题结尾有一个换行
-        content: item.slice(item.indexOf("\n")).replace(`\n`,`\n   `),
-        time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
-    }))
+    return source.split("###").filter((item) => item !== "\n" && item).map((item) => {
+        const [header, content] = item.split("\n");
+
+       return {
+            group: header,//标题结尾有一个换行
+            content: content.replace(/\n/g, "\n   "),
+            time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
+        }
+    })
 }
 // 截取反思字符串
 function handelRethinks(text, isStage) {
-    if (isStage) {
-        return sliceRethinks(text)
-    } else {
-        return sliceRethinks(text, "\n# rethink", "\n# idea")
-    }
+    return isStage ? sliceRethinks(text) 
+    : sliceRethinks(text, "\n## rethink", "\n## idea");
 }
 
 
