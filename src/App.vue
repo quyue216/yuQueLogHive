@@ -3,11 +3,10 @@ import { ref, watch, toRefs, toValue } from 'vue'
 import { ElMessage } from 'element-plus';
 import useStore from "@/store/index";
 import { getUserInfo, takeAllBooks, takeDoc, createSummary } from "@/axios/api";
-import CataLogTree from "@/components/CatalogTree/Index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
 import InitDialog from "./view/InitDialog.vue";
 import { generateGroup, mergeSummary, sortTime ,getMergeTitle} from "@/utils/tools.js";
-
+import TreeContent from "@/view/TreeContent.vue";
 // 定义一个全局状态
 const { store, updateUserInfo, setSelectBookInfo } = useStore()
 
@@ -20,6 +19,15 @@ const books = ref([]);
 
 const selectBook = ref(null);
 
+const { userInfo } = toRefs(store)
+
+const treeContent = ref(null);
+
+const isLoading = ref(false);
+
+const rest = ()=>{
+    treeContent.value.restCheckedTreeNode();
+}
 
 //! 获取用户信息
 async function initializeUserAndBooks() {
@@ -50,18 +58,14 @@ watch(selectBook, () => {
     }
 })
 
-const { userInfo } = toRefs(store)
-
-
-
 //合并逻辑
 async function mergeDoc() {
-  
+    
     if (targetDoc.value.filter((item) => !item.children.length).length !== 1 
     || awaitMergeDocs.value.length === 0) {
         return ElMessage.error("文档选择不正确");
     }
-
+    isLoading.value = true;
     // 得到所有的文章数据
     const docs = await getSelectedDocs(toValue(awaitMergeDocs));
    
@@ -85,6 +89,8 @@ async function mergeDoc() {
     })
 
     ElMessage.success("合并成功!")
+
+    isLoading.value = false;
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {
@@ -93,27 +99,13 @@ function getSelectedDocs(docs) {
 
     return Promise.all(urls.map((u) => takeDoc(u)))
 }
-//!树形结构重置
-let leftTree = ref();
 
-let rightTree = ref();
-function restCheckedTreeNode(){
-
-    awaitMergeDocs.value = []
-
-    targetDoc.value = []
-
-    leftTree.value.$refs.tree.setCheckedKeys([])
-
-    rightTree.value.$refs.tree.setCheckedKeys([])
-}
 </script>
 
 <template>
-    <div class="common-layout">
+    <div class="common-layout" v-loading="isLoading">
         <el-container class="container">
             <el-header class="header">
-
                 <el-row style="margin-top: 15px;">
                     <el-col :span="6">
                         <el-select placeholder="选择知识库" v-model="selectBook">
@@ -129,31 +121,15 @@ function restCheckedTreeNode(){
                         </el-button>
                     </el-col>
                     <el-col :offset="3" :span="3">
-                        <el-button type="primary" @click="restCheckedTreeNode">
+                        <el-button type="primary" @click="rest">
                             rest
                         </el-button>
                     </el-col>
                 </el-row>
-
             </el-header>
             <el-container>
                 <el-main>
-                    <div class="tree-nodeContainer">
-                        <div class="main">
-                            <div>
-                                <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
-                                        style="color: red;">{{ awaitMergeDocs.length }}</span></h2>
-                                <h2 v-else class="title">选择要合并的文档</h2>
-                                <CataLogTree ref="leftTree" v-model="awaitMergeDocs"></CataLogTree>
-                            </div>
-                            <div>
-                                <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
-                                <h2 class="title"  v-else>已选择 <span class="ellipsis" style="color: red;" >{{ targetDoc[0]?.title }}</span>
-                                </h2>
-                                <CataLogTree ref="rightTree" v-model="targetDoc"></CataLogTree>
-                            </div>
-                        </div>
-                    </div>
+                    <TreeContent ref="treeContent" :await-merge-docs="awaitMergeDocs" :target-doc="targetDoc"/>
                 </el-main>
             </el-container>
         </el-container>
@@ -175,24 +151,6 @@ function restCheckedTreeNode(){
         }
     }
 
-    .main {
-        display: flex;
-        height: 100%;
-
-        >div {
-            flex: 1;
-        }
-    }
-
-    .tree-nodeContainer {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-
-        .main {
-            width: 70%;
-        }
-    }
 }
 
 .title {
