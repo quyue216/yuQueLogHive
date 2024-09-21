@@ -11,16 +11,19 @@ const props = defineProps({
     catalogue:{
         type:Array,
         default:[]
+    },
+    setCheckTreeNode:{
+        type:Function,
+        default:()=>{}
     }
 })
-
-//用于实现双向数据绑定
-const treeNodeChecked = defineModel()
 
 const tree = ref(null);
 const handleCheckChange = () => {
    
-   treeNodeChecked.value = tree.value.getCheckedNodes()
+   let checkNode = tree.value.getCheckedNodes()
+   // 传递给顶层组件
+   props.setCheckTreeNode(checkNode)
 };
 
 // 计算默认展开的节点键

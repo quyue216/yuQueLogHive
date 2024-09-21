@@ -100,6 +100,15 @@ function getSelectedDocs(docs) {
     return Promise.all(urls.map((u) => takeDoc(u)))
 }
 
+const setAwaitMergeDocs = (val)=>{
+
+    awaitMergeDocs.value = val;
+}
+
+const setTargetDoc = (val)=>{
+    targetDoc.value = val;
+}
+
 </script>
 
 <template>
@@ -129,7 +138,7 @@ function getSelectedDocs(docs) {
             </el-header>
             <el-container>
                 <el-main>
-                    <TreeContent ref="treeContent" :await-merge-docs="awaitMergeDocs" :target-doc="targetDoc"/>
+                    <TreeContent ref="treeContent" :set-await-merge-docs="setAwaitMergeDocs" :set-target-doc="setTargetDoc"/>
                 </el-main>
             </el-container>
         </el-container>

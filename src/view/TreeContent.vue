@@ -5,13 +5,13 @@
                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span style="color: red;">{{ awaitMergeDocs.length
                         }}</span></h2>
                 <h2 v-else class="title">选择要合并的文档</h2>
-                <CataLogTree ref="leftTree" v-model="awaitMergeDocs"></CataLogTree>
+                <CataLogTree ref="leftTree" :setCheckTreeNode="setAwaitMergeDocs"></CataLogTree>
             </div>
             <div>
                 <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
                 <h2 class="title" v-else>已选择 <span class="ellipsis" style="color: red;">{{ targetDoc[0]?.title }}</span>
                 </h2>
-                <CataLogTree ref="rightTree" v-model="targetDoc"></CataLogTree>
+                <CataLogTree ref="rightTree" :setCheckTreeNode="setTargetDoc"></CataLogTree>
             </div>
         </div>
     </div>
@@ -20,8 +20,17 @@
 <script setup>
 import CataLogTree from "@/components/CatalogTree/Index.vue";
 import { defineExpose , ref} from "vue";
+
 const props = defineProps({
-    'await-merge-docs': {
+  'set-await-merge-docs': {
+    type: Function,
+    required: true
+  },
+  'set-target-doc': {
+    type: Function,
+    required: true
+  },
+  'await-merge-docs': {
         type: Array,
         default: () => []
     },
