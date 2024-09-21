@@ -30,6 +30,12 @@ const handleCheckChange = () => {
 const expandedKeys = computed(() => {
     return  props.catalogue.map(item => item.uuid);
 });
+const clearTreeCheck = ()=>{
+    tree.value.setCheckedKeys([])
+}
+defineExpose({
+    clearTreeCheck,
+});
 </script>
 
 <template>

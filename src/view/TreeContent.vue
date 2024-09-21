@@ -43,15 +43,10 @@ const props = defineProps({
 let leftTree = ref();
 
 let rightTree = ref();
-function restCheckedTreeNode(){
+function restCheckedTreeNode(){    
+    leftTree.value.tree.clearTreeCheck()
 
-    awaitMergeDocs.value = []
-
-    targetDoc.value = []
-
-    leftTree.value.$refs.tree.setCheckedKeys([])
-
-    rightTree.value.$refs.tree.setCheckedKeys([])
+    rightTree.value.tree.clearTreeCheck()
 }
 defineExpose({
   restCheckedTreeNode

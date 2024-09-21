@@ -8,7 +8,7 @@ import Tree from "./Tree.vue";
 const { store } = useStore()
 
 const url = ref("/repos/24552766/toc");
-
+const tree = ref(null);
 const { data, error , isLoading} = useFetch(url);
 
 // 选择了下拉框数据
@@ -34,12 +34,15 @@ const catalogue = computed(() => {
             children: getChildren(toValue(data), treeNode) }))
     }
 })
+defineExpose({
+    tree
+});
 
 </script>
 <template>
     <!-- 还可以扩展error的处理 -->
     <div>
-        <Tree v-bind="$attrs" :catalogue="catalogue"  
+        <Tree ref="tree" v-bind="$attrs" :catalogue="catalogue"  
         v-loading="isLoading"/>
     </div>
 </template>
