@@ -1,10 +1,11 @@
 <script setup>
-import { ref, watch, onMounted, toRefs, toValue } from 'vue'
+import { ref, watch, toRefs, toValue } from 'vue'
 import { ElMessage } from 'element-plus';
 import useStore from "@/store/index";
 import { getUserInfo, takeAllBooks, takeDoc, createSummary } from "@/axios/api";
 import CataLogTree from "@/components/CatalogTree/Index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
+import InitDialog from "./view/InitDialog.vue";
 import { generateGroup, mergeSummary, sortTime ,getMergeTitle} from "@/utils/tools.js";
 
 // 定义一个全局状态
@@ -13,55 +14,31 @@ const { store, updateUserInfo, setSelectBookInfo } = useStore()
 const awaitMergeDocs = ref([]);
 // 合并目标文档
 const targetDoc = ref([]);
+
 //!获取对应的知识库列表
 const books = ref([]);
+
 const selectBook = ref(null);
 
-//!处理输入对应的token
-const dialogVisible = ref(false);
 
-const accessToken = ref("");
-//! token检验
-const checkAccessToken = () => {
-    if (accessToken.value === "") {
-        ElMessage.error("accessToken 不能为空");
-    } else {
-        dialogVisible.value = false;
-        // 初始化用户信息
-        initializeUserAndBooks(); 
-    }
-}
-onMounted(() => {
-    //没有token打开弹框，用户输入对应信息
-    window.token = window.localStorage.getItem("token");
-
-    dialogVisible.value = !window.token;
-
-    if (window.token) {
-        // 初始化用户信息和知识库下拉框
-        initializeUserAndBooks()
-    }
-})
 //! 获取用户信息
 async function initializeUserAndBooks() {
+
     try {
         const userInfoResponse = await getUserInfo();
+
         updateUserInfo(userInfoResponse);
         
         const bookList = await takeAllBooks(userInfoResponse.id);
+
         books.value = bookList;
-        
         // 设置选择的默认值
         selectBook.value = 24552766;
     } catch (error) {
         console.error('初始化用户和书籍信息时发生错误:', error);
     }
 }
-//! 缓存token到本地
-watch(accessToken, () => {
-    window.localStorage.setItem("token", accessToken.value);
-    window.token = accessToken.value
-})
+
 // 选择发生变化得到选择的select
 watch(selectBook, () => {
 
@@ -72,12 +49,14 @@ watch(selectBook, () => {
         setSelectBookInfo(result);
     }
 })
+
 const { userInfo } = toRefs(store)
-let loading = ref(false);
+
+
 
 //合并逻辑
 async function mergeDoc() {
-    loading.value = true;
+  
     if (targetDoc.value.filter((item) => !item.children.length).length !== 1 
     || awaitMergeDocs.value.length === 0) {
         return ElMessage.error("文档选择不正确");
@@ -106,7 +85,6 @@ async function mergeDoc() {
     })
 
     ElMessage.success("合并成功!")
-    loading.value = false;
 }
 // 获取所有的文章数据
 function getSelectedDocs(docs) {
@@ -117,6 +95,7 @@ function getSelectedDocs(docs) {
 }
 //!树形结构重置
 let leftTree = ref();
+
 let rightTree = ref();
 function restCheckedTreeNode(){
 
@@ -125,10 +104,9 @@ function restCheckedTreeNode(){
     targetDoc.value = []
 
     leftTree.value.$refs.tree.setCheckedKeys([])
-    
+
     rightTree.value.$refs.tree.setCheckedKeys([])
 }
-
 </script>
 
 <template>
@@ -161,7 +139,7 @@ function restCheckedTreeNode(){
             <el-container>
                 <el-main>
                     <div class="tree-nodeContainer">
-                        <div class="main" v-loading="loading">
+                        <div class="main">
                             <div>
                                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
                                         style="color: red;">{{ awaitMergeDocs.length }}</span></h2>
@@ -179,17 +157,7 @@ function restCheckedTreeNode(){
                 </el-main>
             </el-container>
         </el-container>
-        <el-dialog :show-close="false" :close-on-click-modal="false" align-center v-model="dialogVisible"
-            title="语雀token" width="500">
-            <el-input v-model="accessToken"></el-input>
-            <template #footer>
-                <div class="dialog-footer">
-                    <el-button type="primary" @click="checkAccessToken">
-                        确认
-                    </el-button>
-                </div>
-            </template>
-        </el-dialog>
+        <InitDialog :initializeUserAndBooks="initializeUserAndBooks"></InitDialog>
     </div>
 </template>
 
