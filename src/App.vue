@@ -3,8 +3,7 @@ import { ref, watch, onMounted, toRefs, toValue } from 'vue'
 import { ElMessage } from 'element-plus';
 import useStore from "@/store/index";
 import { getUserInfo, takeAllBooks, takeDoc, createSummary } from "@/axios/api";
-import CataLogLeft from "@/components/CatalogLeft/index.vue";
-import CatalogRight from "@/components/CatalogRight/index.vue";
+import CataLogTree from "@/components/CatalogTree/Index.vue";
 import matchSummary from "@/utils/matchSummaryGroup";
 import { generateGroup, mergeSummary, sortTime ,getMergeTitle} from "@/utils/tools.js";
 
@@ -28,6 +27,8 @@ const checkAccessToken = () => {
         ElMessage.error("accessToken 不能为空");
     } else {
         dialogVisible.value = false;
+        // 初始化用户信息
+        initializeUserAndBooks(); 
     }
 }
 onMounted(() => {
@@ -37,19 +38,25 @@ onMounted(() => {
     dialogVisible.value = !window.token;
 
     if (window.token) {
-
-        getUserInfo().then(async (res) => {
-            //!设置用户信息
-            updateUserInfo(res)
-            //!获取知识库列表
-            const result = await takeAllBooks(res.id);
-
-            books.value = result;
-            //设置选择的默认值
-            selectBook.value = 24552766
-        })
+        // 初始化用户信息和知识库下拉框
+        initializeUserAndBooks()
     }
 })
+//! 获取用户信息
+async function initializeUserAndBooks() {
+    try {
+        const userInfoResponse = await getUserInfo();
+        updateUserInfo(userInfoResponse);
+        
+        const bookList = await takeAllBooks(userInfoResponse.id);
+        books.value = bookList;
+        
+        // 设置选择的默认值
+        selectBook.value = 24552766;
+    } catch (error) {
+        console.error('初始化用户和书籍信息时发生错误:', error);
+    }
+}
 //! 缓存token到本地
 watch(accessToken, () => {
     window.localStorage.setItem("token", accessToken.value);
@@ -118,6 +125,7 @@ function restCheckedTreeNode(){
     targetDoc.value = []
 
     leftTree.value.$refs.tree.setCheckedKeys([])
+    
     rightTree.value.$refs.tree.setCheckedKeys([])
 }
 
@@ -158,13 +166,13 @@ function restCheckedTreeNode(){
                                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span
                                         style="color: red;">{{ awaitMergeDocs.length }}</span></h2>
                                 <h2 v-else class="title">选择要合并的文档</h2>
-                                <CataLogLeft ref="leftTree" v-model="awaitMergeDocs"></CataLogLeft>
+                                <CataLogTree ref="leftTree" v-model="awaitMergeDocs"></CataLogTree>
                             </div>
                             <div>
                                 <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
                                 <h2 class="title"  v-else>已选择 <span class="ellipsis" style="color: red;" >{{ targetDoc[0]?.title }}</span>
                                 </h2>
-                                <CatalogRight ref="rightTree" v-model="targetDoc"></CatalogRight>
+                                <CataLogTree ref="rightTree" v-model="targetDoc"></CataLogTree>
                             </div>
                         </div>
                     </div>
