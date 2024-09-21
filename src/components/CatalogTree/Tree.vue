@@ -30,6 +30,13 @@ const handleCheckChange = () => {
 const expandedKeys = computed(() => {
     return  props.catalogue.map(item => item.uuid);
 });
+// 为清空节点提供支持
+const clearTreeCheck = ()=>{
+    tree.value.setCheckedKeys([])
+}
+defineExpose({
+    clearTreeCheck,
+});
 </script>
 
 <template>

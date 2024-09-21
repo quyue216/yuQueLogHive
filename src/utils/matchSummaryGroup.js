@@ -47,7 +47,7 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
 // 截取反思字符串
 function handelRethinks(text, isStage) {
     return isStage ? sliceRethinks(text) 
-    : sliceRethinks(text, "\n## rethink", "\n## idea");
+    : sliceRethinks(text, "\n# rethink", "\n# idea");
 }
 
 

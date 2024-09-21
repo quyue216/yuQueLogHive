@@ -86,8 +86,10 @@ function sortUnCorrectFormat(cryList) {
 
         let time = cry.time.slice(-4);
 
-        if (stageFormat[time] !== undefined) {
-            newArr[stageFormat[time]] = cry;
+        let stageTitle = stageFormat[time];
+
+        if (stageTitle!== undefined) {
+            newArr[stageTitle] = cry;
         } else {
             staged.push(cry);
         }

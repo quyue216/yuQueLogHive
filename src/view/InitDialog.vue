@@ -50,7 +50,7 @@ onMounted(() => {
         props.initializeUserAndBooks()
     }
 })
-
+// 保存用户的token信息
 watch(accessToken, () => {
     window.localStorage.setItem("token", accessToken.value);
     window.token = accessToken.value

@@ -4,7 +4,7 @@
 
 在查找子节点的时候需要根据顺序去进行查找并push
 child_uuid    子级第一个子节点
-prev_uuid   前一个子节点 
+prev_uuid     前一个子节点 
 sibling_uuid  同级后一个子节点
 */
 export function getChildren(arr,treeNode) {
