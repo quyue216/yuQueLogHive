@@ -16,7 +16,7 @@ const targetDoc = ref([]);
 
 //!获取对应的知识库列表
 const books = ref([]);
-
+// 选择的书籍信息
 const selectBook = ref(null);
 
 const { userInfo } = toRefs(store)
@@ -70,8 +70,9 @@ async function mergeDoc() {
     const docs = await getSelectedDocs(toValue(awaitMergeDocs));
    
     // 将文章转换为分类对象 
-    const cryObj = docs.map((doc) => matchSummary(doc)).flat()
+    const cryObj = docs.flatMap((doc) => matchSummary(doc))
 
+    //根据最早最晚得到标题
     const title =  getMergeTitle(cryObj)
     
     //将分类对象进行分组 
@@ -79,9 +80,10 @@ async function mergeDoc() {
     
     //对分类对象进行排序
     Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
-    
+   
     let newDocStr = mergeSummary(cryGroup)
-    
+ 
+    // return
     await createSummary(`/repos/${selectBook.value}/docs/${targetDoc.value[0].id}`, {
         slug: targetDoc.value[0].id,
         title: title,
@@ -112,7 +114,7 @@ const setTargetDoc = (val)=>{
 </script>
 
 <template>
-    <div class="common-layout" v-loading="isLoading">
+    <div class="common-layout" v-loading.fullscreen.lock="isLoading">
         <el-container class="container">
             <el-header class="header">
                 <el-row style="margin-top: 15px;">
