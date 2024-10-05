@@ -60,8 +60,9 @@ watch(selectBook, () => {
 
 //合并逻辑
 async function mergeDoc() {
+    const choice = targetDoc.value.filter((item) => !item.children.length).length
     
-    if (targetDoc.value.filter((item) => !item.children.length).length !== 1 
+    if (choice !== 1 
     || awaitMergeDocs.value.length === 0) {
         return ElMessage.error("文档选择不正确");
     }
