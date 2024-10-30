@@ -35,13 +35,20 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
 
     let source = str.replace(startStr, "")
     //！总结的分类就是三级标题
-    return source.split("###").filter((item) => item !== "\n" && item).map((item) => {
+    return source.split("###").filter((item) =>{
         let index = item.indexOf("\n");
-       return {
+        let suyContent = item.slice(index)
+        // 必须大于三个字
+        return suyContent.replace(/[\n\t]/g, '').trim().length > 3;
+    }).map((item) => {
+        let index = item.indexOf("\n");
+        let  contentObj =  {
              group: item.slice(0, index),//标题结尾有一个换行
-            content: item.slice(index).replace(/\n(?!:::)/g,`\n   `).replace(/\n\n(?!:::)/g, '\n\n   '),
+             content: item.slice(index).replace(/\n(?!:::)/g,`\n   `).replace(/\n\n(?!:::)/g, '\n\n   '),
             time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
         }
+
+        return contentObj
     })
 }
 // 截取反思字符串
