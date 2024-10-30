@@ -1,29 +1,7 @@
-# summary
+summary的效果出现问题
 
-This template should help get you started developing with Vue 3 in Vite.
+1. 有部分日期的合并效果是乱的
+   1. 标题没有copy过来 
+   2. 蓝色的文字块影响了整体的样式
+   3. 自己使用注意格式-规范
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```

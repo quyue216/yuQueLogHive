@@ -39,7 +39,7 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
         let index = item.indexOf("\n");
        return {
              group: item.slice(0, index),//标题结尾有一个换行
-            content: item.slice(index).replace(`\n`,`\n   `).replace(`\n\n`,`\n\n   `),
+            content: item.slice(index).replace(/\n(?!:::)/g,`\n   `).replace(/\n\n(?!:::)/g, '\n\n   '),
             time:startStr ===  "\n## rethink" ? time : `# ${docInfo.title}`
         }
     })
