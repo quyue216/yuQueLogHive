@@ -4,11 +4,11 @@
             <div>
                 <h2 class="title" v-if="awaitMergeDocs.length">已选择 <span style="color: red;">{{ awaitMergeDocs.length
                         }}</span></h2>
-                <h2 v-else class="title">选择要合并的文档</h2>
+                <h2 v-else class="title">源文档（被合并）</h2>
                 <CataLogTree ref="leftTree" :setCheckTreeNode="setAwaitMergeDocs"></CataLogTree>
             </div>
             <div>
-                <h2 class="title" v-if="!targetDoc.length">选择要合并的目标文档</h2>
+                <h2 class="title" v-if="!targetDoc.length">主文档（合并至）</h2>
                 <h2 class="title" v-else>已选择 <span class="ellipsis" style="color: red;">{{ targetDoc[0]?.title }}</span>
                 </h2>
                 <CataLogTree ref="rightTree" :setCheckTreeNode="setTargetDoc"></CataLogTree>
