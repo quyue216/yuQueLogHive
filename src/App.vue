@@ -35,7 +35,7 @@ async function initializeUserAndBooks() {
     try {
         const userInfoResponse = await getUserInfo();
 
-        updateUserInfo(userInfoResponse);
+        updateUserInfo(userInfoResponse);  // 更新全局状态中的用户信息
         
         const bookList = await takeAllBooks(userInfoResponse.id);
 
@@ -103,11 +103,13 @@ function getSelectedDocs(docs) {
     return Promise.all(urls.map((u) => takeDoc(u)))
 }
 
+// 源文档（被合并）
 const setAwaitMergeDocs = (val)=>{
 
     awaitMergeDocs.value = val;
 }
 
+// 主文档（合并至）
 const setTargetDoc = (val)=>{
     targetDoc.value = val;
 }
@@ -121,7 +123,10 @@ const setTargetDoc = (val)=>{
                 <el-row style="margin-top: 15px;">
                     <el-col :span="6">
                         <el-select placeholder="选择知识库" v-model="selectBook">
-                            <el-option v-for="item in books" :key="item.id" :label="item.name" :value="item.id" />
+                            <el-option v-for="item in books" 
+                            :key="item.id" 
+                            :label="item.name" 
+                            :value="item.id" />
                         </el-select>
                     </el-col>
                     <el-col :offset="2" :span="4">
@@ -139,21 +144,30 @@ const setTargetDoc = (val)=>{
                     </el-col>
                 </el-row>
             </el-header>
-            <el-container>
-                <el-main>
-                    <TreeContent ref="treeContent" :set-await-merge-docs="setAwaitMergeDocs" :set-target-doc="setTargetDoc"/>
+            <el-container style="height: calc(100% - 60px);">
+                <el-main style="padding-top: 0px;">
+                    <TreeContent ref="treeContent"   
+                    :await-merge-docs="awaitMergeDocs" 
+                    :target-doc="targetDoc" 
+                    :set-await-merge-docs="setAwaitMergeDocs" 
+                    :set-target-doc="setTargetDoc"/>
                 </el-main>
             </el-container>
         </el-container>
+        <!-- 初始化弹框
+        1. 获取token, token作为window属性保存
+            1.1 token存在于缓存，直接获取
+            1.2 token不存在，弹框输入token
+        -->
         <InitDialog :initializeUserAndBooks="initializeUserAndBooks"></InitDialog>
     </div>
 </template>
 
 <style scoped lang="less">
 .common-layout {
-    height: 80%;
+    height: 95%;
     width: 70%;
-    margin: 5% auto;
+    margin: 2.5% auto;
 
     .container {
         height: 100%;

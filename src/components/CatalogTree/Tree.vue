@@ -8,11 +8,11 @@ const defaultProps = {
 }
 
 const props = defineProps({
-    catalogue:{
+    catalogue:{ //目录
         type:Array,
         default:[]
     },
-    setCheckTreeNode:{
+    setCheckTreeNode:{ // 选中节点
         type:Function,
         default:()=>{}
     }
@@ -40,7 +40,7 @@ defineExpose({
 </script>
 
 <template>
-    <div>
+    <div class="treeContainer">
         <el-tree ref="tree" 
         :data="catalogue" 
         show-checkbox 
@@ -56,5 +56,8 @@ defineExpose({
 .custom-font-size {
     font-size: 18px;
     /* 调整为你想要的大小 */
+}
+.treeContainer{
+    height: 100%;
 }
 </style>

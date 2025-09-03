@@ -25,16 +25,3 @@ export function useFetch(url) {
 
   return { data, error , isLoading}
 }
-
-// artificial delay
-function timeout() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (Math.random() > 0.3) {
-        resolve()
-      } else {
-        reject(new Error('Random Error'))
-      }
-    }, 300)
-  })
-}

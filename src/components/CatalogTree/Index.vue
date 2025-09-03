@@ -28,23 +28,26 @@ const catalogue = computed(() => {
     } else {
         //1. 先获取对应的一级目录
         const treeRoots = data.value.filter((item) => !item.parent_uuid);
-
+        //2. 递归获取子节点
         return treeRoots.map((treeNode) => ({ 
             ...treeNode, 
-            children: getChildren(toValue(data), treeNode) }))
+            children: getChildren(toValue(data), treeNode) }))  //构建层级关系
     }
 })
 defineExpose({
     tree
 });
-
+//TODO  tree组件的渲染和数据处理分离
 </script>
 <template>
     <!-- 还可以扩展error的处理 -->
-    <div>
-        <Tree ref="tree" v-bind="$attrs" :catalogue="catalogue"  
+   
+        <Tree 
+         ref="tree"
+         v-bind="$attrs" 
+         :catalogue="catalogue"  
         v-loading="isLoading"/>
-    </div>
+   
 </template>
 
 <style scoped>

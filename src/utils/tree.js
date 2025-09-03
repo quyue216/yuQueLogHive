@@ -15,8 +15,12 @@ export function getChildren(arr,treeNode) {
     //! 创建一个快捷映射表，用于快速查找uuid对应的节点
     const uuidMap = new Map(arr.map(item => [item.uuid, item]));
     
-    while (pointer_uuid){
-    
+    /* 
+    1. 构建当前节点的所有子节点
+        1.1 递归获取子节点 (直至没有子节点)
+    */
+    while (pointer_uuid){       
+        //1. 先获取当前指针指向的节点
         const treeChildNode = uuidMap.get(pointer_uuid);
         
         if(!treeChildNode) break;
