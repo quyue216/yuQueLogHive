@@ -57,10 +57,11 @@ export function convertDateToTimestamp(dateStr) {
 export function sortTime(cgyData) {
 
     let verifyDate = /^#\s\d{4}年\d{1,2}月\d{1,2}日/gm
-
+    // 单元总结
     let correctFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) !== -1);
-
+    // 阶段总结
     let unCorrectFormatData = cgyData.filter((cry) => cry.time.search(verifyDate) === -1);
+    
     // 按照时间进行排序
     correctFormatData.sort((a, b) => {
 
@@ -84,12 +85,14 @@ function sortUnCorrectFormat(cryList) {
 
     cryList.forEach((cry) => {
 
-        let time = cry.time.slice(-4);
-
-        let stageTitle = stageFormat[time];
-
-        if (stageTitle!== undefined) {
-            newArr[stageTitle] = cry;
+        let time = cry.time
+        // 得到下标
+        const match = time.match(/[\u4e00-\u9fa5]+/); // 匹配连续的中文字符
+        
+        if (match && stageFormat[match[0]]) {
+           let stageTitle = match[0];
+            //newArr合适位置设置值 
+            newArr[stageFormat[stageTitle]] = cry;
         } else {
             staged.push(cry);
         }

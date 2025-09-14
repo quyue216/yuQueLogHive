@@ -83,7 +83,8 @@ async function mergeDoc() {
     
     //对分类对象进行排序
     Object.keys(cryGroup).forEach((k) => cryGroup[k] = sortTime(cryGroup[k]))
-   
+    
+    // 合并文章
     let newDocStr = mergeSummary(cryGroup)
  
     // return
