@@ -37,7 +37,7 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
     //！总结的分类就是三级标题
     return source.split("###").filter((item) =>{
         let index = item.indexOf("\n");
-        let suyContent = item.slice(index)
+        let suyContent = item.slice(index)  //! 截取标题后的内容
         // 必须大于三个字
         return suyContent.replace(/[\n\t]/g, '').trim().length > 3;
     }).map((item) => {
@@ -53,8 +53,8 @@ function summaryGroup(str, time, startStr = "\n## rethink") {
 }
 // 截取反思字符串
 function handelRethinks(text, isStage) {
-    return isStage ? sliceRethinks(text) 
-    : sliceRethinks(text, "\n# rethink", "\n# idea");
+    return isStage ? sliceRethinks(text)   //!单元总结
+    : sliceRethinks(text, "\n# rethink", "\n# idea"); //! 阶段总结
 }
 
 
@@ -75,7 +75,7 @@ function sliceRethinks(str, startStr = "\n## rethink", endStr = "\n## idea") {
 
         results.push(rethinks);
 
-        sourceStr = sourceStr.slice(endIndex + endStr.length)
+        sourceStr = sourceStr.slice(endIndex + endStr.length) //! 从下一个位置开始截取
     }
 
     return results;

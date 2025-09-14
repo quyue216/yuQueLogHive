@@ -60,12 +60,14 @@ watch(selectBook, () => {
 
 //合并逻辑
 async function mergeDoc() {
-    const choice = targetDoc.value.filter((item) => !item.children.length).length
     
-    if (choice !== 1 
-    || awaitMergeDocs.value.length === 0) {
-        return ElMessage.error("文档选择不正确");
+    // 验证所有文档
+    const verifyResult = verifyAllDocs();
+
+    if (typeof verifyResult === 'string') {
+        return ElMessage.error(verifyResult);
     }
+
     isLoading.value = true;
     // 得到所有的文章数据
     const docs = await getSelectedDocs(toValue(awaitMergeDocs));
@@ -108,6 +110,38 @@ const setAwaitMergeDocs = (val)=>{
 
     awaitMergeDocs.value = val;
 }
+
+// 重构后的验证函数
+const verifyAllDocs = () => {
+    // 验证文档数量
+    if (awaitMergeDocs.value.length === 0) {
+        return "请先选择需要合并的源文档";
+    }
+
+    // 验证目标文档
+    if (targetDoc.value.length !== 1) {
+        return "请选择一个主文档作为合并目标";
+    }
+    
+    // 验证源文档标题格式
+    const invalidDocs = awaitMergeDocs.value.every(doc => isValidDocTitle(doc.title));
+
+    if(!invalidDocs){
+        return "请检查源文档标题格式，格式为：第X单元/第X阶段"
+    }
+
+    return true; // 验证通过
+};
+
+// 辅助函数：验证单个文档标题格式
+const isValidDocTitle = (title) => {
+    if (!title || title.length < 4) return false;
+    
+    // 提取标题中的关键部分（跳过"第"字）
+    const titleKey = title.slice(2);
+    // 检查是否包含有效格式
+    return titleKey.startsWith('单元') || titleKey.startsWith('阶段');
+};
 
 // 主文档（合并至）
 const setTargetDoc = (val)=>{
